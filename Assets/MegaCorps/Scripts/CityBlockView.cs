@@ -3,11 +3,13 @@ using System.Collections;
 
 public class CityBlockView : MonoBehaviour {
 
+    private Transform selector;
     private GameManager gameManager;
     private SpriteRenderer renderer;
     public CityBlock cityBlock { get; set; }
 
 	void Start () {
+        this.selector = transform.GetChild(0);
         this.renderer = GetComponent<SpriteRenderer>();
         this.gameManager = Object.FindObjectOfType<GameManager>();
 	}
@@ -24,9 +26,17 @@ public class CityBlockView : MonoBehaviour {
 
     void OnMouseDown() {
         if (Input.GetMouseButtonDown(0)) {
-            gameManager.setSelectedCityBlock(this.cityBlock);
+            gameManager.setSelectedCityBlock(this);
         } else if (Input.GetMouseButtonDown(1)) {
             Debug.Log("Right click on : " + cityBlock.name);
+        }
+    }
+
+    public void showSelector(bool show) {
+        if (show) {
+            this.selector.gameObject.SetActive(true);
+        } else {
+            this.selector.gameObject.SetActive(false);
         }
     }
 }

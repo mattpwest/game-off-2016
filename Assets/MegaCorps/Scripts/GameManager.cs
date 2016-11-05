@@ -13,7 +13,7 @@ public class GameManager : MonoBehaviour {
     public UILabel cityBlockIncomeValueLabel = null;
 
     private City city;
-    private CityBlock selectedBlock;
+    private CityBlockView selectedBlock;
 
     void Start () {
         setSelectedCityBlock(null);
@@ -63,25 +63,32 @@ public class GameManager : MonoBehaviour {
         updateUiForCurrentPlayer();
     }
 
-    public void setSelectedCityBlock(CityBlock cityBlock) {
-        this.selectedBlock = cityBlock;
+    public void setSelectedCityBlock(CityBlockView cityBlockView) {
+        if (this.selectedBlock != null) {
+            this.selectedBlock.showSelector(false);
+        }
+
+        this.selectedBlock = cityBlockView;
 
         if (this.selectedBlock == null) {
             this.cityBlockLabel.gameObject.SetActive(false);
             this.cityBlockIncomeLabel.gameObject.SetActive(false);
             this.cityBlockIncomeValueLabel.gameObject.SetActive(false);
         } else {
-            this.cityBlockLabel.text = this.selectedBlock.name;
+            this.selectedBlock.showSelector(true);
+
+            CityBlock block = this.selectedBlock.cityBlock;
+            this.cityBlockLabel.text = block.name;
             this.cityBlockLabel.gameObject.SetActive(true);
-            if (this.selectedBlock.owner != null) {
-                this.cityBlockLabel.color = ColorConverter.convert(this.selectedBlock.owner.colour);
+            if (block.owner != null) {
+                this.cityBlockLabel.color = ColorConverter.convert(block.owner.colour);
             } else {
                 this.cityBlockLabel.color = Color.white;
             }
 
             this.cityBlockIncomeLabel.gameObject.SetActive(true);
 
-            this.cityBlockIncomeValueLabel.text = "$ " + this.selectedBlock.income;
+            this.cityBlockIncomeValueLabel.text = "$ " + block.income;
             this.cityBlockIncomeValueLabel.gameObject.SetActive(true);
         }
     }
