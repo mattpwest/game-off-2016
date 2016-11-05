@@ -4,12 +4,20 @@ using System.Collections;
 public class GameManager : MonoBehaviour {
 
     public Transform cityBlockView;
+
     public UILabel playerLabel = null;
     public UILabel cashLabel = null;
 
+    public UILabel cityBlockLabel = null;
+    public UILabel cityBlockIncomeLabel = null;
+    public UILabel cityBlockIncomeValueLabel = null;
+
     private City city;
+    private CityBlock selectedBlock;
 
     void Start () {
+        setSelectedCityBlock(null);
+
         initGame();
         initViews();
         updateUiForCurrentPlayer();
@@ -18,11 +26,11 @@ public class GameManager : MonoBehaviour {
     private void initGame() {
         city = City.getInstance();
 
-        city.generateCity(7, 7);
+        city.generateCity(5, 5);
         city.addPlayer("Alpha");
         city.addPlayer("Beta");
-        city.addPlayer("Charlie");
-        city.addPlayer("Delta");
+        //city.addPlayer("Charlie");
+        //city.addPlayer("Delta");
 
         city.startTurn();
     }
@@ -53,6 +61,29 @@ public class GameManager : MonoBehaviour {
     public void endTurn() {
         city.endTurn();
         updateUiForCurrentPlayer();
+    }
+
+    public void setSelectedCityBlock(CityBlock cityBlock) {
+        this.selectedBlock = cityBlock;
+
+        if (this.selectedBlock == null) {
+            this.cityBlockLabel.gameObject.SetActive(false);
+            this.cityBlockIncomeLabel.gameObject.SetActive(false);
+            this.cityBlockIncomeValueLabel.gameObject.SetActive(false);
+        } else {
+            this.cityBlockLabel.text = this.selectedBlock.name;
+            this.cityBlockLabel.gameObject.SetActive(true);
+            if (this.selectedBlock.owner != null) {
+                this.cityBlockLabel.color = ColorConverter.convert(this.selectedBlock.owner.colour);
+            } else {
+                this.cityBlockLabel.color = Color.white;
+            }
+
+            this.cityBlockIncomeLabel.gameObject.SetActive(true);
+
+            this.cityBlockIncomeValueLabel.text = "$ " + this.selectedBlock.income;
+            this.cityBlockIncomeValueLabel.gameObject.SetActive(true);
+        }
     }
 	
 	void Update () {

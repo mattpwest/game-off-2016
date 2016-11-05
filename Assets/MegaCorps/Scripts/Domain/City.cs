@@ -46,7 +46,7 @@ public class City {
 
             for (int x = 0; x < width; x++) {
                 char column = (char) ('A' + x);
-                CityBlock block = new CityBlock(column + "" + y, 10000);
+                CityBlock block = new CityBlock(column + "" + (y + 1), 10000);
                 row.Add(block);
             }
         }
