@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using System.Collections;
+using System.Collections.Generic;
 
 public class GameManager : MonoBehaviour {
 
@@ -14,6 +14,7 @@ public class GameManager : MonoBehaviour {
 
     private City city;
     private CityBlockView selectedBlock;
+    private Dictionary<CityBlock, CityBlockView> cityBlockViews = new Dictionary<CityBlock, CityBlockView>();
 
     void Start () {
         setSelectedCityBlock(null);
@@ -44,7 +45,9 @@ public class GameManager : MonoBehaviour {
             for (int x = 0; x < city.width; x++) {
                 Vector3 pos = new Vector3(cornerX + x * tileSize, cornerY + y * tileSize);
                 Transform view = (Transform) Instantiate(cityBlockView, pos, Quaternion.identity);
-                view.GetComponent<CityBlockView>().cityBlock = city.getCityBlock(x, y);
+                CityBlockView newView = view.GetComponent<CityBlockView>();
+                newView.cityBlock = city.getCityBlock(x, y);
+                cityBlockViews.Add(newView.cityBlock, newView);
             }
         }
     }
@@ -52,10 +55,19 @@ public class GameManager : MonoBehaviour {
     private void updateUiForCurrentPlayer() {
         Player player = city.getCurrentPlayer();
 
+        // Update UI elements like player name and cash
         playerLabel.text = player.name;
         playerLabel.color = ColorConverter.convert(player.colour);
 
         cashLabel.text = "$ " + player.cash;
+
+        // Update map tiles with player squads
+        List<Squad> squads = city.squadManager.getSquads(player);
+        for (int i = 0; i < squads.Count; i++) {
+            Squad squad = squads[i];
+            CityBlock block = city.getCityBlock(squad.x, squad.y);
+            cityBlockViews[block].setShowSquadIndicator(true);
+        }
     }
 
     public void endTurn() {
@@ -65,7 +77,7 @@ public class GameManager : MonoBehaviour {
 
     public void setSelectedCityBlock(CityBlockView cityBlockView) {
         if (this.selectedBlock != null) {
-            this.selectedBlock.showSelector(false);
+            this.selectedBlock.setShowSelector(false);
         }
 
         this.selectedBlock = cityBlockView;
@@ -75,7 +87,7 @@ public class GameManager : MonoBehaviour {
             this.cityBlockIncomeLabel.gameObject.SetActive(false);
             this.cityBlockIncomeValueLabel.gameObject.SetActive(false);
         } else {
-            this.selectedBlock.showSelector(true);
+            this.selectedBlock.setShowSelector(true);
 
             CityBlock block = this.selectedBlock.cityBlock;
             this.cityBlockLabel.text = block.name;

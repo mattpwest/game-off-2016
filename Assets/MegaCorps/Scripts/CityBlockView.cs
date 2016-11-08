@@ -1,15 +1,21 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 public class CityBlockView : MonoBehaviour {
 
     private Transform selector;
+    private Transform squadIndicator;
     private GameManager gameManager;
     private SpriteRenderer renderer;
+
+    private bool showSelector = false;
+    private bool showSquadIndicator = false;
+
     public CityBlock cityBlock { get; set; }
 
 	void Start () {
-        this.selector = transform.GetChild(0);
+        this.selector = transform.FindChild("TileSelector");
+        this.squadIndicator = transform.FindChild("SquadIndicator");
+
         this.renderer = GetComponent<SpriteRenderer>();
         this.gameManager = Object.FindObjectOfType<GameManager>();
 	}
@@ -22,6 +28,14 @@ public class CityBlockView : MonoBehaviour {
                 this.renderer.color = ColorConverter.convert(cityBlock.owner.colour);
             }
         }
+
+        if (this.selector.gameObject.activeSelf != this.showSelector) {
+            this.selector.gameObject.SetActive(this.showSelector);
+        }
+
+        if (this.squadIndicator.gameObject.activeSelf != this.showSquadIndicator) {
+            this.squadIndicator.gameObject.SetActive(this.showSquadIndicator);
+        }
     }
 
     void OnMouseDown() {
@@ -32,11 +46,11 @@ public class CityBlockView : MonoBehaviour {
         }
     }
 
-    public void showSelector(bool show) {
-        if (show) {
-            this.selector.gameObject.SetActive(true);
-        } else {
-            this.selector.gameObject.SetActive(false);
-        }
+    public void setShowSelector(bool show) {
+        this.showSelector = show;
+    }
+
+    public void setShowSquadIndicator(bool show) {
+        this.showSquadIndicator = show;
     }
 }
