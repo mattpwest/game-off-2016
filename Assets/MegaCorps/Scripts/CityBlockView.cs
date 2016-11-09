@@ -9,6 +9,7 @@ public class CityBlockView : MonoBehaviour {
 
     private bool showSelector = false;
     private bool showSquadIndicator = false;
+    private Color squadColor = Color.white;
 
     public CityBlock cityBlock { get; set; }
 
@@ -25,8 +26,14 @@ public class CityBlockView : MonoBehaviour {
             if (cityBlock.owner == null) {
                 this.renderer.color = Color.white;
             } else {
-                this.renderer.color = ColorConverter.convert(cityBlock.owner.colour);
+                Color newColor = ColorConverter.convert(cityBlock.owner.colour);
+                newColor = newColor * 0.75f;
+                newColor.a = 1.0f;
+                this.renderer.color = newColor;
             }
+
+            SpriteRenderer theRenderer = squadIndicator.GetComponent<SpriteRenderer>();
+            theRenderer.material.SetColor("_Color1out", squadColor);
         }
 
         if (this.selector.gameObject.activeSelf != this.showSelector) {
@@ -52,5 +59,9 @@ public class CityBlockView : MonoBehaviour {
 
     public void setShowSquadIndicator(bool show) {
         this.showSquadIndicator = show;
+    }
+
+    public void setSquadIndicatorColour(Color color) {
+        this.squadColor = color;
     }
 }

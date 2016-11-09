@@ -14,7 +14,8 @@ public class GameManager : MonoBehaviour {
 
     private City city;
     private CityBlockView selectedBlock;
-    private Dictionary<CityBlock, CityBlockView> cityBlockViews = new Dictionary<CityBlock, CityBlockView>();
+    private Dictionary<CityBlock, CityBlockView> blockViewIndex = new Dictionary<CityBlock, CityBlockView>();
+    private List<CityBlockView> blockViews = new List<CityBlockView>();
 
     void Start () {
         setSelectedCityBlock(null);
@@ -30,8 +31,8 @@ public class GameManager : MonoBehaviour {
         city.generateCity(5, 5);
         city.addPlayer("Alpha");
         city.addPlayer("Beta");
-        //city.addPlayer("Charlie");
-        //city.addPlayer("Delta");
+        city.addPlayer("Charlie");
+        city.addPlayer("Delta");
 
         city.startTurn();
     }
@@ -47,27 +48,48 @@ public class GameManager : MonoBehaviour {
                 Transform view = (Transform) Instantiate(cityBlockView, pos, Quaternion.identity);
                 CityBlockView newView = view.GetComponent<CityBlockView>();
                 newView.cityBlock = city.getCityBlock(x, y);
-                cityBlockViews.Add(newView.cityBlock, newView);
+                blockViewIndex.Add(newView.cityBlock, newView);
+                blockViews.Add(newView);
             }
         }
     }
 
     private void updateUiForCurrentPlayer() {
+        displayPlayerNameAndCash();
+
+        resetSquadDisplayOnMap();
+        displayFriendlySquadsOnMap();
+        displayEnemySquadsOnMap();
+    }
+
+    private void displayPlayerNameAndCash() {
         Player player = city.getCurrentPlayer();
 
-        // Update UI elements like player name and cash
         playerLabel.text = player.name;
         playerLabel.color = ColorConverter.convert(player.colour);
 
         cashLabel.text = "$ " + player.cash;
+    }
 
-        // Update map tiles with player squads
-        List<Squad> squads = city.squadManager.getSquads(player);
+    private void resetSquadDisplayOnMap() {
+        for (int i = 0; i < blockViews.Count; i++) {
+            blockViews[i].setShowSquadIndicator(false);
+        }
+    }
+
+    private void displayFriendlySquadsOnMap() {
+        Player player = city.getCurrentPlayer();
+        List<Squad> squads = city.getCurrentPlayerSquads();
         for (int i = 0; i < squads.Count; i++) {
             Squad squad = squads[i];
             CityBlock block = city.getCityBlock(squad.x, squad.y);
-            cityBlockViews[block].setShowSquadIndicator(true);
+            blockViewIndex[block].setShowSquadIndicator(true);
+            blockViewIndex[block].setSquadIndicatorColour(ColorConverter.convert(player.colour));
         }
+    }
+
+    private void displayEnemySquadsOnMap() {
+
     }
 
     public void endTurn() {

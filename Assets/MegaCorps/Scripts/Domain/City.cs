@@ -156,4 +156,8 @@ public class City {
 
         return total;
     }
+
+    public List<Squad> getCurrentPlayerSquads() {
+        return squadManager.getSquads(getCurrentPlayer());
+    }
 }
