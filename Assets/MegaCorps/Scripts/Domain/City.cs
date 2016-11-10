@@ -160,4 +160,8 @@ public class City {
     public List<Squad> getCurrentPlayerSquads() {
         return squadManager.getSquads(getCurrentPlayer());
     }
+
+    public List<Squad> getCurrentPlayerSquads(CityBlock cityBlock) {
+        return squadManager.getSquads(cityBlock, getCurrentPlayer());
+    }
 }

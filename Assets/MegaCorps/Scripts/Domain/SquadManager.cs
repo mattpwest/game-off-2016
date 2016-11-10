@@ -1,20 +1,27 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 public class SquadManager {
     private Dictionary<Player, List<Squad>> playerSquads = new Dictionary<Player, List<Squad>>();
     private Dictionary<CityBlock, List<Squad>> cityBlockSquads = new Dictionary<CityBlock, List<Squad>>();
+    private List<Squad> allSquads = new List<Squad>();
 
     public Squad createSquad(Player player, int numAgents) {
-        Squad squad = new Squad(player, numAgents);
-        squad.LocationChanged += onSquadLocationChanged;
-
         if (!playerSquads.ContainsKey(player)) {
             playerSquads.Add(player, new List<Squad>());
         }
-
+       
+        Squad squad = new Squad(player, generateSquadName(player), numAgents);
+        squad.LocationChanged += onSquadLocationChanged;
         playerSquads[player].Add(squad);
+        allSquads.Add(squad);
 
         return squad;
+    }
+
+    private string generateSquadName(Player player) {
+        char letter = (char)('A' + (char)((playerSquads[player].Count) % 26));
+        return "Squad " + letter;
     }
 
     private void onSquadLocationChanged(object sender, LocationChangedEventArgs e) {
@@ -33,6 +40,10 @@ public class SquadManager {
 
             cityBlockSquads[to].Add(squad);
         }
+    }
+
+    public List<Squad> getSquads() {
+        return new List<Squad>(allSquads);
     }
 
     public List<Squad> getSquads(CityBlock block) {

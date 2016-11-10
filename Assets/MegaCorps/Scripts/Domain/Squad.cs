@@ -6,13 +6,16 @@ public class Squad {
     public event EventHandler<LocationChangedEventArgs> LocationChanged;
 
     public Player owner { get; set; }
+    public string name { get; set; }
+    public Command command { get; set; }
     public int x { get; private set; }
     public int y { get; private set; }
     private List<Agent> agents = new List<Agent>();
 
-    public Squad(Player owner, int numRandomAgents) {
+    public Squad(Player owner, string name, int numRandomAgents) {
         this.x = -1;
         this.y = -1;
+        this.name = name;
 
         this.owner = owner;
 
@@ -32,6 +35,10 @@ public class Squad {
             EventArgs args = new EventArgs();
             LocationChanged(this, eventArgs);
         }
+    }
+
+    public int agentCount() {
+        return agents.Count;
     }
 }
 
