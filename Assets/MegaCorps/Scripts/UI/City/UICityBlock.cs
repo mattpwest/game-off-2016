@@ -1,11 +1,12 @@
 ﻿using UnityEngine;
 
-public class CityBlockView : MonoBehaviour {
+public class UICityBlock : MonoBehaviour {
+
+    private UIState uiState;
 
     private Transform selector;
     private Transform squadIndicator;
-    private GameManager gameManager;
-    private SpriteRenderer renderer;
+    private SpriteRenderer spriteRenderer;
 
     private bool showSelector = false;
     private bool showSquadIndicator = false;
@@ -14,22 +15,23 @@ public class CityBlockView : MonoBehaviour {
     public CityBlock cityBlock { get; set; }
 
 	void Start () {
+        this.uiState = UIState.getInstance();
+        
         this.selector = transform.FindChild("TileSelector");
         this.squadIndicator = transform.FindChild("SquadIndicator");
 
-        this.renderer = GetComponent<SpriteRenderer>();
-        this.gameManager = Object.FindObjectOfType<GameManager>();
+        this.spriteRenderer = GetComponent<SpriteRenderer>();
 	}
 	
 	void Update () {
         if (cityBlock != null) {
             if (cityBlock.owner == null) {
-                this.renderer.color = Color.white;
+                this.spriteRenderer.color = Color.white;
             } else {
                 Color newColor = ColorConverter.convert(cityBlock.owner.colour);
                 newColor = newColor * 0.75f;
                 newColor.a = 1.0f;
-                this.renderer.color = newColor;
+                this.spriteRenderer.color = newColor;
             }
 
             SpriteRenderer theRenderer = squadIndicator.GetComponent<SpriteRenderer>();
@@ -47,7 +49,7 @@ public class CityBlockView : MonoBehaviour {
 
     void OnMouseDown() {
         if (Input.GetMouseButtonDown(0)) {
-            gameManager.setSelectedCityBlock(this);
+            uiState.setActiveBlock(this.cityBlock);
         } else if (Input.GetMouseButtonDown(1)) {
             Debug.Log("Right click on : " + cityBlock.name);
         }

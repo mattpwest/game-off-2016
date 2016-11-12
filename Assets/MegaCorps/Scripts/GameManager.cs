@@ -14,12 +14,12 @@ public class GameManager : MonoBehaviour {
     public GameObject squadSelector;
 
     private City city;
-    private CityBlockView selectedBlock;
-    private Dictionary<CityBlock, CityBlockView> blockViewIndex = new Dictionary<CityBlock, CityBlockView>();
-    private List<CityBlockView> blockViews = new List<CityBlockView>();
+    //private CityBlockView selectedBlock;
+    //private Dictionary<CityBlock, CityBlockView> blockViewIndex = new Dictionary<CityBlock, CityBlockView>();
+    //private List<CityBlockView> blockViews = new List<CityBlockView>();
 
     void Start () {
-        setSelectedCityBlock(null);
+        //setSelectedCityBlock(null);
 
         initGame();
         initViews();
@@ -47,10 +47,10 @@ public class GameManager : MonoBehaviour {
             for (int x = 0; x < city.width; x++) {
                 Vector3 pos = new Vector3(cornerX + x * tileSize, cornerY + y * tileSize);
                 Transform view = (Transform) Instantiate(cityBlockView, pos, Quaternion.identity);
-                CityBlockView newView = view.GetComponent<CityBlockView>();
-                newView.cityBlock = city.getCityBlock(x, y);
-                blockViewIndex.Add(newView.cityBlock, newView);
-                blockViews.Add(newView);
+      //          CityBlockView newView = view.GetComponent<CityBlockView>();
+      //          newView.cityBlock = city.getCityBlock(x, y);
+      //          blockViewIndex.Add(newView.cityBlock, newView);
+      //          blockViews.Add(newView);
             }
         }
     }
@@ -73,9 +73,9 @@ public class GameManager : MonoBehaviour {
     }
 
     private void resetSquadDisplayOnMap() {
-        for (int i = 0; i < blockViews.Count; i++) {
-            blockViews[i].setShowSquadIndicator(false);
-        }
+        //for (int i = 0; i < blockViews.Count; i++) {
+        //    blockViews[i].setShowSquadIndicator(false);
+        //}
     }
 
     private void displayFriendlySquadsOnMap() {
@@ -84,8 +84,8 @@ public class GameManager : MonoBehaviour {
         for (int i = 0; i < squads.Count; i++) {
             Squad squad = squads[i];
             CityBlock block = city.getCityBlock(squad.x, squad.y);
-            blockViewIndex[block].setShowSquadIndicator(true);
-            blockViewIndex[block].setSquadIndicatorColour(ColorConverter.convert(squad.owner.colour));
+            //blockViewIndex[block].setShowSquadIndicator(true);
+            //blockViewIndex[block].setSquadIndicatorColour(ColorConverter.convert(squad.owner.colour));
         }
     }
 
@@ -98,7 +98,7 @@ public class GameManager : MonoBehaviour {
         updateUiForCurrentPlayer();
     }
 
-    public void setSelectedCityBlock(CityBlockView cityBlockView) {
+    /*public void setSelectedCityBlock(CityBlockView cityBlockView) {
         if (this.selectedBlock != null) {
             this.selectedBlock.setShowSelector(false);
         }
@@ -115,10 +115,10 @@ public class GameManager : MonoBehaviour {
             showCityBlockDetails();
             showCityBlockSquads();
         }
-    }
+    }*/
     
     private void showCityBlockDetails() {
-        CityBlock block = this.selectedBlock.cityBlock;
+        /*CityBlock block = this.selectedBlock.cityBlock;
         this.cityBlockLabel.text = block.name;
         this.cityBlockLabel.gameObject.SetActive(true);
         if (block.owner != null) {
@@ -130,11 +130,11 @@ public class GameManager : MonoBehaviour {
         this.cityBlockIncomeLabel.gameObject.SetActive(true);
 
         this.cityBlockIncomeValueLabel.text = "$ " + block.income;
-        this.cityBlockIncomeValueLabel.gameObject.SetActive(true);
+        this.cityBlockIncomeValueLabel.gameObject.SetActive(true);*/
     }
 
     private void showCityBlockSquads() {
-        CityBlock block = this.selectedBlock.cityBlock;
+        /*CityBlock block = this.selectedBlock.cityBlock;
         if (block == null) {
             return;
         }
@@ -161,7 +161,7 @@ public class GameManager : MonoBehaviour {
             }
         } else {
             this.squadSelector.SetActive(false);
-        }
+        }*/
     }
 
     void Update () {

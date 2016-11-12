@@ -157,6 +157,18 @@ public class City {
         return total;
     }
 
+    public HashSet<CityBlock> getBlocksWherePlayerPresent(Player player) {
+        HashSet<CityBlock> result = new HashSet<CityBlock>();
+        List<Squad> squads = squadManager.getSquads(player);
+
+        for (int i = 0; i < squads.Count; i++) {
+            Squad squad = squads[i];
+            result.Add(getCityBlock(squad.x, squad.y));
+        }
+
+        return result;
+    }
+
     public List<Squad> getCurrentPlayerSquads() {
         return squadManager.getSquads(getCurrentPlayer());
     }
