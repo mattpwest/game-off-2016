@@ -108,8 +108,11 @@ public class City {
         CityBlock block = getCityBlock(x, y);
         block.owner = owner;
 
-        Squad squad = squadManager.createSquad(owner, NUM_AGENTS_IN_STARTING_SQUAD);
-        squad.setLocation(x, y);
+        Squad squad1 = squadManager.createSquad(owner, NUM_AGENTS_IN_STARTING_SQUAD);
+        squad1.setLocation(x, y);
+
+        Squad squad2 = squadManager.createSquad(owner, NUM_AGENTS_IN_STARTING_SQUAD);
+        squad2.setLocation(x, y);
     }
 
     public void startTurn() {
@@ -140,6 +143,17 @@ public class City {
     }
 
     private void endRound() {
+        foreach (Player player in players) {
+            List<Squad> squads = squadManager.getSquads(player);
+
+            foreach (Squad squad in squads) {
+                if (squad.command != null && squad.command.GetType() == typeof(MoveCommand)) {
+                    MoveCommand cmd = (MoveCommand) squad.command;
+                    squad.setLocation(cmd.x, cmd.y);
+                }
+            }
+        }
+        
     }
 
     private int calculateIncomeFromOwnedCityBlocks(Player player) {
@@ -175,5 +189,37 @@ public class City {
 
     public List<Squad> getCurrentPlayerSquads(CityBlock cityBlock) {
         return squadManager.getSquads(cityBlock, getCurrentPlayer());
+    }
+
+    public List<CityBlock> getSquadMoveTargets(Squad squad) {
+        // TODO: Replace this primitive method with distance calculations based on squad.speed
+
+        int minX = squad.x > 0 ? squad.x - 1 : 0;
+        int maxX = squad.x < width - 1 ? squad.x + 1 : width - 1;
+        int minY = squad.y > 0 ? squad.y - 1 : 0;
+        int maxY = squad.y < height - 1 ? squad.y + 1 : height - 1;
+
+        List<CityBlock> result = new List<CityBlock>();
+
+        for (int x = minX; x <= maxX; x++) {
+            for (int y = minY; y <= maxY; y++) {
+                if (x == squad.x && y == squad.y) continue;
+
+                result.Add(getCityBlock(x, y));
+            }
+        }
+
+        return result;
+    }
+
+    public bool issueMoveOrder(Squad squad, CityBlock cityBlock) {
+        if (squad == null || cityBlock == null) return false;
+
+        if (cityBlock.x >= squad.x - 1 && cityBlock.x <= squad.x + 1 && cityBlock.y >= squad.y - 1 && cityBlock.y <= squad.y + 1) {
+            squad.command = new MoveCommand(cityBlock.x, cityBlock.y);
+            return true;
+        } else {
+            return false;
+        }
     }
 }

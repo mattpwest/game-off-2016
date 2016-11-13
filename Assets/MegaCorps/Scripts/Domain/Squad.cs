@@ -10,12 +10,15 @@ public class Squad {
     public Command command { get; set; }
     public int x { get; private set; }
     public int y { get; private set; }
+    public float speed { get; set; }
+
     private List<Agent> agents = new List<Agent>();
 
     public Squad(Player owner, string name, int numRandomAgents) {
         this.x = -1;
         this.y = -1;
         this.name = name;
+        this.speed = 1.0f;
 
         this.owner = owner;
 

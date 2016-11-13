@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 public class UICityBlock : MonoBehaviour {
 
@@ -6,9 +7,11 @@ public class UICityBlock : MonoBehaviour {
 
     private Transform selector;
     private Transform squadIndicator;
+    private Transform moveIndicator;
     private SpriteRenderer spriteRenderer;
 
     private bool showSelector = false;
+    private bool showMoveSelector = false;
     private bool showSquadIndicator = false;
     private Color squadColor = Color.white;
 
@@ -19,6 +22,7 @@ public class UICityBlock : MonoBehaviour {
         
         this.selector = transform.FindChild("TileSelector");
         this.squadIndicator = transform.FindChild("SquadIndicator");
+        this.moveIndicator = transform.FindChild("MoveSelector");
 
         this.spriteRenderer = GetComponent<SpriteRenderer>();
 	}
@@ -45,13 +49,37 @@ public class UICityBlock : MonoBehaviour {
         if (this.squadIndicator.gameObject.activeSelf != this.showSquadIndicator) {
             this.squadIndicator.gameObject.SetActive(this.showSquadIndicator);
         }
+
+        if (this.moveIndicator.gameObject.activeSelf != this.showMoveSelector) {
+            this.moveIndicator.gameObject.SetActive(this.showMoveSelector);
+        }
+
+        if (this.showMoveSelector && uiState.getActiveSquad() != null) {
+            Squad squad = uiState.getActiveSquad();
+            if (squad.command != null && squad.command.GetType() == typeof(MoveCommand)) {
+                MoveCommand cmd = (MoveCommand) squad.command;
+                if (cmd.x == cityBlock.x && cmd.y == cityBlock.y) {
+                    this.moveIndicator.GetComponent<TweenRotation>().enabled = true;
+                } else {
+                    this.moveIndicator.GetComponent<TweenRotation>().enabled = false;
+                    this.moveIndicator.localEulerAngles = new Vector3(0.0f, 0.0f, 0.0f);
+                }
+            } else {
+                this.moveIndicator.GetComponent<TweenRotation>().enabled = false;
+                this.moveIndicator.localEulerAngles = new Vector3(0.0f, 0.0f, 0.0f);
+            }
+        }
     }
 
-    void OnMouseDown() {
+    void OnMouseOver() {
         if (Input.GetMouseButtonDown(0)) {
             uiState.setActiveBlock(this.cityBlock);
         } else if (Input.GetMouseButtonDown(1)) {
-            Debug.Log("Right click on : " + cityBlock.name);
+            if (City.getInstance().issueMoveOrder(uiState.getActiveSquad(), this.cityBlock)) {
+                Debug.Log("Movement order issued!");
+            } else {
+                Debug.Log("Movement order failed!");
+            }
         }
     }
 
@@ -65,5 +93,9 @@ public class UICityBlock : MonoBehaviour {
 
     public void setSquadIndicatorColour(Color color) {
         this.squadColor = color;
+    }
+
+    internal void setShowMoveIndicator(bool show) {
+        this.showMoveSelector = show;
     }
 }

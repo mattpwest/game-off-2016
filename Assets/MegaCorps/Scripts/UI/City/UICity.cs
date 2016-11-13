@@ -16,8 +16,9 @@ public class UICity : MonoBehaviour {
         this.uiState.CityChanged += OnCityChanged;
         this.uiState.BlockChanged += OnBlockChanged;
         this.uiState.PlayerChanged += OnPlayerChanged;
+        this.uiState.SquadChanged += OnSquadChanged;
 	}
-
+    
     void Update () {
 	
 	}
@@ -68,9 +69,8 @@ public class UICity : MonoBehaviour {
     }
 
     private void hideSquads(Player player) {
-        HashSet<CityBlock> blocks = city.getBlocksWherePlayerPresent(player);
-        foreach (CityBlock block in blocks) {
-            blockViewIndex[block].setShowSquadIndicator(false);
+        foreach (UICityBlock block in blockViews) {
+            block.setShowSquadIndicator(false);
         }
     }
 
@@ -81,6 +81,29 @@ public class UICity : MonoBehaviour {
             UICityBlock view = blockViewIndex[block];
             view.setSquadIndicatorColour(ColorConverter.convert(player.colour));
             view.setShowSquadIndicator(true);
+        }
+    }
+
+    private void OnSquadChanged(object sender, UIState.SquadChangedEventArgs args) {
+        if (args.previousSquad != null) {
+            hideMoveTargets(args.previousSquad);
+        }
+
+        if (args.squad != null) {
+            showMoveTargets(args.squad);
+        }
+    }
+    
+    private void hideMoveTargets(Squad previousSquad) {
+        foreach (UICityBlock view in blockViews) {
+            view.setShowMoveIndicator(false);
+        }
+    }
+
+    private void showMoveTargets(Squad squad) {
+        List<CityBlock> blocks = city.getSquadMoveTargets(squad);
+        foreach (CityBlock block in blocks) {
+            blockViewIndex[block].setShowMoveIndicator(true);
         }
     }
 }

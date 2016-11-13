@@ -7,10 +7,12 @@ public class UIState {
     public City activeCity { get; private set; }
     private Player activePlayer;
     private CityBlock activeBlock;
+    private Squad activeSquad;
 
     public event EventHandler<CityChangedEventArgs> CityChanged;
     public event EventHandler<PlayerChangedEventArgs> PlayerChanged;
     public event EventHandler<BlockChangedEventArgs> BlockChanged;
+    public event EventHandler<SquadChangedEventArgs> SquadChanged;
 
     private UIState() {
     }
@@ -50,6 +52,8 @@ public class UIState {
             args.previousPlayer = previousPlayer;
             PlayerChanged.Invoke(this, args);
         }
+
+        this.setActiveBlock(null);
     }
 
     public CityBlock getActiveBlock() {
@@ -66,6 +70,24 @@ public class UIState {
             args.previousBlock = previousBlock;
             this.BlockChanged.Invoke(this, args);
         }
+
+        this.setActiveSquad(null);
+    }
+
+    public Squad getActiveSquad() {
+        return this.activeSquad;
+    }
+
+    public void setActiveSquad(Squad squad) {
+        Squad previousSquad = this.activeSquad;
+        this.activeSquad = squad;
+
+        if (SquadChanged != null) {
+            SquadChangedEventArgs args = new SquadChangedEventArgs();
+            args.squad = squad;
+            args.previousSquad = previousSquad;
+            this.SquadChanged.Invoke(this, args);
+        }
     }
 
     public class CityChangedEventArgs : EventArgs {
@@ -80,5 +102,10 @@ public class UIState {
     public class BlockChangedEventArgs : EventArgs {
         public CityBlock block { get; set; }
         public CityBlock previousBlock { get; set; }
+    }
+
+    public class SquadChangedEventArgs : EventArgs {
+        public Squad squad { get; set; }
+        public Squad previousSquad { get; set; }
     }
 }
