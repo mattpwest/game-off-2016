@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System;
 
 public class City {
 
@@ -192,12 +193,11 @@ public class City {
     }
 
     public List<CityBlock> getSquadMoveTargets(Squad squad) {
-        // TODO: Replace this primitive method with distance calculations based on squad.speed
-
-        int minX = squad.x > 0 ? squad.x - 1 : 0;
-        int maxX = squad.x < width - 1 ? squad.x + 1 : width - 1;
-        int minY = squad.y > 0 ? squad.y - 1 : 0;
-        int maxY = squad.y < height - 1 ? squad.y + 1 : height - 1;
+        int maxDistance = (int) squad.speed;
+        int minX = squad.x - maxDistance;
+        int maxX = squad.x + maxDistance;
+        int minY = squad.y - maxDistance;
+        int maxY = squad.y + maxDistance;
 
         List<CityBlock> result = new List<CityBlock>();
 
@@ -205,7 +205,10 @@ public class City {
             for (int y = minY; y <= maxY; y++) {
                 if (x == squad.x && y == squad.y) continue;
 
-                result.Add(getCityBlock(x, y));
+                CityBlock block = getCityBlock(x, y);
+                if (block != null && calculateDistance(squad.x, squad.y, block.x, block.y) <= squad.speed) {
+                    result.Add(block);
+                }
             }
         }
 
@@ -221,5 +224,11 @@ public class City {
         } else {
             return false;
         }
+    }
+
+    private double calculateDistance(int x0, int y0, int x1, int y1) {
+        int dx = x1 - x0;
+        int dy = y1 - y0;
+        return Math.Sqrt(dx * dx + dy * dy);
     }
 }
