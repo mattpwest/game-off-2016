@@ -148,9 +148,16 @@ public class City {
             List<Squad> squads = squadManager.getSquads(player);
 
             foreach (Squad squad in squads) {
-                if (squad.command != null && squad.command.GetType() == typeof(MoveCommand)) {
-                    MoveCommand cmd = (MoveCommand) squad.command;
+                if (squad.command == null) continue;
+
+                if (squad.command.GetType() == typeof(MoveCommand)) {
+                    MoveCommand cmd = (MoveCommand)squad.command;
                     squad.setLocation(cmd.x, cmd.y);
+                    squad.command = null;
+                } else if (squad.command.GetType() == typeof(ControlCommand)) {
+                    CityBlock block = getCityBlock(squad.x, squad.y);
+                    block.owner = squad.owner;
+                    squad.command = null;
                 }
             }
         }
@@ -218,12 +225,22 @@ public class City {
     public bool issueMoveOrder(Squad squad, CityBlock cityBlock) {
         if (squad == null || cityBlock == null) return false;
 
-        if (cityBlock.x >= squad.x - 1 && cityBlock.x <= squad.x + 1 && cityBlock.y >= squad.y - 1 && cityBlock.y <= squad.y + 1) {
+        if (calculateDistance(squad.x, squad.y, cityBlock.x, cityBlock.y) <= squad.speed) {
             squad.command = new MoveCommand(cityBlock.x, cityBlock.y);
             return true;
         } else {
             return false;
         }
+    }
+
+    public bool issueControlOrder(Squad squad) {
+        if (squad == null) return false;
+
+        CityBlock block = getCityBlock(squad.x, squad.y);
+        if (block.owner == squad.owner) return false;
+
+        squad.command = new ControlCommand();
+        return true;
     }
 
     private double calculateDistance(int x0, int y0, int x1, int y1) {
