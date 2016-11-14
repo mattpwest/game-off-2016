@@ -22,7 +22,7 @@ public class UIMain : MonoBehaviour {
     public void startGame() {
         City city = City.getInstance();
 
-        city.generateCity(5, 5);
+        city.generateCity(5, 5, new NoCityBlocksEliminationStrategy());
         city.addPlayer("Alpha");
         city.addPlayer("Beta");
         city.addPlayer("Charlie");

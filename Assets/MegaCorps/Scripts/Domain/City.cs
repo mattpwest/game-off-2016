@@ -10,6 +10,7 @@ public class City {
     public int width { get; private set; }
     public int height { get; private set; }
     public int maxPlayers { get; private set; }
+    public IEliminationStrategy eliminationStrategy { get; private set; }
     public SquadManager squadManager { get; private set; }
     
     private List<List<CityBlock>> map;
@@ -40,9 +41,10 @@ public class City {
         return instance;
     }
 
-    public void generateCity(int width, int height) {
+    public void generateCity(int width, int height, IEliminationStrategy eliminationStrategy) {
         this.width = width;
         this.height = height;
+        this.eliminationStrategy = eliminationStrategy;
         this.map = new List<List<CityBlock>>(height);
 
         for (int y = 0; y < height; y++) {
@@ -123,22 +125,37 @@ public class City {
     }
 
     public void endTurn() {
-        currentPlayer++;
+        while (currentPlayer < players.Count) {
+            currentPlayer++;
 
-        if (currentPlayer == players.Count) {
-            currentPlayer = 0;
+            if (currentPlayer == players.Count) {
+                currentPlayer = 0;
 
-            endRound();
-            startRound();
+                endRound();
+                startRound();
+            }
+
+            if (!players[currentPlayer].eliminated) break;
         }
-
+        
         startTurn();
     }
 
     private void startRound() {
-        for (int i = 0; i < players.Count; i++) {
-            Player player = players[i];
+        eliminatePlayers();
+        addPlayerIncome();
+    }
 
+    private void eliminatePlayers() {
+        foreach (Player player in players) {
+            EliminationOutcome outcome = eliminationStrategy.checkForAndPerformElimination(player);
+
+            // TODO: if (outcome.eliminated) { add event to messages queue }
+        }
+    }
+
+    private void addPlayerIncome() {
+        foreach (Player player in players) {
             player.cash += calculateIncomeFromOwnedCityBlocks(player);
         }
     }
@@ -166,17 +183,24 @@ public class City {
 
     private int calculateIncomeFromOwnedCityBlocks(Player player) {
         int total = 0;
+        foreach (CityBlock block in getOwnedCityBlocks(player)) {
+            total += block.income;
+        }
+        return total;
+    }
+
+    public List<CityBlock> getOwnedCityBlocks(Player player) {
+        List<CityBlock> result = new List<CityBlock>();
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
                 CityBlock block = getCityBlock(x, y);
                 Player owner = block.owner;
-                if (owner != null && owner.name == player.name) {
-                    total += block.income;
+                if (owner != null && owner == player) {
+                    result.Add(block);
                 }
             }
         }
-
-        return total;
+        return result;
     }
 
     public HashSet<CityBlock> getBlocksWherePlayerPresent(Player player) {
