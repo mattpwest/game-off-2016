@@ -11,11 +11,13 @@ public class City {
     public int height { get; private set; }
     public int maxPlayers { get; private set; }
     public IEliminationStrategy eliminationStrategy { get; private set; }
+    public IVictoryStrategy victoryStrategy { get; private set; }
     public SquadManager squadManager { get; private set; }
     
     private List<List<CityBlock>> map;
     private List<Player> players;
     private List<Colour> playerColours;
+    private Dictionary<Player, List<String>> messages = new Dictionary<Player, List<string>>();
     private int currentPlayer = -1;
 
 	private City() {
@@ -41,10 +43,11 @@ public class City {
         return instance;
     }
 
-    public void generateCity(int width, int height, IEliminationStrategy eliminationStrategy) {
+    public void generateCity(int width, int height, IEliminationStrategy eliminationStrategy, IVictoryStrategy victoryStrategy) {
         this.width = width;
         this.height = height;
         this.eliminationStrategy = eliminationStrategy;
+        this.victoryStrategy = victoryStrategy;
         this.map = new List<List<CityBlock>>(height);
 
         for (int y = 0; y < height; y++) {
@@ -68,6 +71,9 @@ public class City {
 
         Player player = new Player(name, playerColours[players.Count]);
         players.Add(player);
+
+        messages.Add(player, new List<String>());
+        messages[player].Add("Welcome to the city!");
         
         return player;
     }
@@ -86,6 +92,10 @@ public class City {
         }
 
         return players[currentPlayer];
+    }
+
+    public List<Player> getPlayers() {
+        return this.players;
     }
 
     private void startGame() {
@@ -143,14 +153,42 @@ public class City {
 
     private void startRound() {
         eliminatePlayers();
+        checkForWinners();
         addPlayerIncome();
     }
-
+    
     private void eliminatePlayers() {
         foreach (Player player in players) {
+            if (player.eliminated) continue; // Players should only be eliminated once
+
             EliminationOutcome outcome = eliminationStrategy.checkForAndPerformElimination(player);
 
-            // TODO: if (outcome.eliminated) { add event to messages queue }
+            if (outcome.eliminated) {
+                messages[player].Add("You have been eliminated " + outcome.reason);
+
+                foreach (Player otherPlayer in players) {
+                    if (otherPlayer != player) {
+                        messages[otherPlayer].Add(player.name + " has been elminated " + outcome.reason);
+                    }
+                }
+            }
+        }
+    }
+
+    private void checkForWinners() {
+        foreach (Player player in players) {
+            VictoryOutcome outcome = victoryStrategy.checkForVictory(player);
+
+            if (outcome.victory) {
+                messages[player].Add("You have won by " + outcome.reason);
+
+                foreach (Player otherPlayer in players) {
+                    if (otherPlayer != player) {
+                        messages[otherPlayer].Add(player.name + " won by " + outcome.reason);
+                        otherPlayer.eliminated = true;
+                    }
+                }
+            }
         }
     }
 
@@ -162,8 +200,9 @@ public class City {
 
     private void endRound() {
         foreach (Player player in players) {
-            List<Squad> squads = squadManager.getSquads(player);
+            messages[player].Clear();
 
+            List<Squad> squads = squadManager.getSquads(player);
             foreach (Squad squad in squads) {
                 if (squad.command == null) continue;
 
@@ -271,5 +310,9 @@ public class City {
         int dx = x1 - x0;
         int dy = y1 - y0;
         return Math.Sqrt(dx * dx + dy * dy);
+    }
+
+    public List<String> getMessages(Player player) {
+        return this.messages[player];
     }
 }

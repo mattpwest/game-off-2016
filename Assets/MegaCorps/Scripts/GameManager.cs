@@ -29,7 +29,7 @@ public class GameManager : MonoBehaviour {
     private void initGame() {
         city = City.getInstance();
 
-        city.generateCity(5, 5, new NoCityBlocksEliminationStrategy());
+        city.generateCity(5, 5, new NoCityBlocksEliminationStrategy(), new LastManStandingVictoryStrategy());
         city.addPlayer("Alpha");
         city.addPlayer("Beta");
         city.addPlayer("Charlie");
