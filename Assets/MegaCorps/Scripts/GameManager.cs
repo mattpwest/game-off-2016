@@ -29,11 +29,11 @@ public class GameManager : MonoBehaviour {
     private void initGame() {
         city = City.getInstance();
 
-        city.generateCity(5, 5, new NoCityBlocksEliminationStrategy(), new LastManStandingVictoryStrategy());
         city.addPlayer("Alpha");
         city.addPlayer("Beta");
         city.addPlayer("Charlie");
         city.addPlayer("Delta");
+        city.generateCity(5, 5, new ConcentricCityMapGenerator(), new NoCityBlocksEliminationStrategy(), new LastManStandingVictoryStrategy());
 
         city.startTurn();
     }
@@ -46,7 +46,7 @@ public class GameManager : MonoBehaviour {
         for (int y = 0; y < city.height; y++) {
             for (int x = 0; x < city.width; x++) {
                 Vector3 pos = new Vector3(cornerX + x * tileSize, cornerY + y * tileSize);
-                Transform view = (Transform) Instantiate(cityBlockView, pos, Quaternion.identity);
+                Instantiate(cityBlockView, pos, Quaternion.identity);
       //          CityBlockView newView = view.GetComponent<CityBlockView>();
       //          newView.cityBlock = city.getCityBlock(x, y);
       //          blockViewIndex.Add(newView.cityBlock, newView);
@@ -79,11 +79,10 @@ public class GameManager : MonoBehaviour {
     }
 
     private void displayFriendlySquadsOnMap() {
-        Player player = city.getCurrentPlayer();
         List<Squad> squads = city.getCurrentPlayerSquads();
         for (int i = 0; i < squads.Count; i++) {
             Squad squad = squads[i];
-            CityBlock block = city.getCityBlock(squad.x, squad.y);
+            city.getCityBlock(squad.x, squad.y);
             //blockViewIndex[block].setShowSquadIndicator(true);
             //blockViewIndex[block].setSquadIndicatorColour(ColorConverter.convert(squad.owner.colour));
         }

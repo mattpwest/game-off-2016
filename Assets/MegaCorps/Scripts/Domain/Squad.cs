@@ -35,7 +35,6 @@ public class Squad {
         this.y = y;
 
         if (LocationChanged != null) {
-            EventArgs args = new EventArgs();
             LocationChanged(this, eventArgs);
         }
     }

@@ -22,11 +22,11 @@ public class UIMain : MonoBehaviour {
     public void startGame() {
         City city = City.getInstance();
 
-        city.generateCity(5, 5, new NoCityBlocksEliminationStrategy(), new LastManStandingVictoryStrategy());
         city.addPlayer("Alpha");
         city.addPlayer("Beta");
         city.addPlayer("Charlie");
         city.addPlayer("Delta");
+        city.generateCity(5, 5, new ConcentricCityMapGenerator(), new NoCityBlocksEliminationStrategy(), new LastManStandingVictoryStrategy());
 
         city.startTurn();
 
