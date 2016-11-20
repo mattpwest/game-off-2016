@@ -13,12 +13,11 @@ public class UISquadDetailsPanel : MonoBehaviour {
 
     void Start() {
         this.uiState = UIState.getInstance();
+        UIState.getInstance().SquadChanged += OnSquadChanged;
 
         this.squadName = transform.FindChild("SquadName").GetComponent<Text>();
         this.orders = transform.FindChild("Orders").GetComponent<Text>();
         this.agents = transform.FindChild("Agents").GetComponent<Text>();
-
-        UIState.getInstance().SquadChanged += OnSquadChanged;
 
         this.gameObject.SetActive(false);
     }
@@ -47,7 +46,9 @@ public class UISquadDetailsPanel : MonoBehaviour {
             if (squad.command.GetType() == typeof(MoveCommand)) {
                 this.orders.text = "Moving";
             } else if (squad.command.GetType() == typeof(ControlCommand)) {
-                this.orders.text = "Controlling";
+                this.orders.text = "Hacking";
+            } else if (squad.command.GetType() == typeof(ChipCommand)) {
+                this.orders.text = "CHIP";
             } else {
                 this.orders.text = "None";
             }
@@ -58,5 +59,9 @@ public class UISquadDetailsPanel : MonoBehaviour {
     
     public void OnControlClicked() {
         City.getInstance().issueControlOrder(uiState.getActiveSquad());
+    }
+
+    public void OnChipClicked() {
+        City.getInstance().issueChipOrder(uiState.getActiveSquad());
     }
 }

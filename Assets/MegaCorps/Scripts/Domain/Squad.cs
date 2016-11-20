@@ -7,7 +7,7 @@ public class Squad {
 
     public Player owner { get; set; }
     public string name { get; set; }
-    public Command command { get; set; }
+    public ICommand command { get; set; }
     public int x { get; private set; }
     public int y { get; private set; }
     public float speed { get; set; }
@@ -41,6 +41,14 @@ public class Squad {
 
     public int agentCount() {
         return agents.Count;
+    }
+
+    public int calculateBaseMaintenanceCost() {
+        int cost = 0;
+        foreach (Agent agent in agents) {
+            cost += agent.calculateBaseMaintenanceCost();
+        }
+        return cost;
     }
 }
 

@@ -29,9 +29,7 @@ public class CityBlock {
     public int getIncome() {
         float baseIncome = taxRate * population * wealthLevel.incomePerPerson;
         float guaranteedIncome = baseIncome * chipAdoption; // * chipIncomeBonusPercentage; // (TODO: Corporation attributes feature)
-
-        float nonChipTaxRate = taxRate * 0.5f * (1.0f - chipAdoption);
-        float variableIncome = baseIncome * nonChipTaxRate; // * happinessBonusOrPenaltyPercentage; // TODO: Happiness systemm
+        float variableIncome = baseIncome * (1.0f - chipAdoption) * 0.5f; // * happinessBonusOrPenaltyPercentage; // TODO: Happiness systemm
         return (int) Math.Round(guaranteedIncome + variableIncome);
     }
 
@@ -53,6 +51,16 @@ public class CityBlock {
 
     public int getHappinessLevel() {
         return this.happiness;
+    }
+
+    public void implementChipMarketing() {
+        float increase = (float) (1.0f - chipAdoption) * 0.1f;
+        chipAdoption += increase;
+        chipAdoption = (float) Math.Round(chipAdoption, 2);
+
+        if (chipAdoption > 1.0f) { // Shouldn't happen, but just in-case
+            chipAdoption = 1.0f;
+        }
     }
 }
 
@@ -201,9 +209,9 @@ public class CityBlockBuilder : ICityBlockBuilder {
 }
 
 public class WealthLevel {
-    public static WealthLevel POOR = new WealthLevel("Poor", 1);
-    public static WealthLevel AVERAGE = new WealthLevel("Average", 3);
-    public static WealthLevel RICH = new WealthLevel("Rich", 5);
+    public static WealthLevel POOR = new WealthLevel("Poor", 3);
+    public static WealthLevel AVERAGE = new WealthLevel("Average", 8);
+    public static WealthLevel RICH = new WealthLevel("Rich", 15);
 
     public string name { get; private set; }
     public int incomePerPerson { get; private set; }
