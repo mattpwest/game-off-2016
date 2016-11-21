@@ -133,7 +133,6 @@ public class City {
     private void startRound() {
         eliminatePlayers();
         checkForWinners();
-        addPlayerIncome();
     }
     
     private void eliminatePlayers() {
@@ -171,14 +170,9 @@ public class City {
         }
     }
 
-    private void addPlayerIncome() {
-        foreach (Player player in players) {
-            player.cash += calculateIncomeFromOwnedCityBlocks(player);
-        }
-    }
-
     private void endRound() {
         foreach (Player player in players) {
+            player.cash += calculateIncomeFromOwnedCityBlocks(player);
             player.cash -= calulateSquadMaintenanceCosts(player);
 
             messages[player].Clear();
