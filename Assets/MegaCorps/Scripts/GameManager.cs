@@ -1,16 +1,17 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections.Generic;
 
 public class GameManager : MonoBehaviour {
 
     public Transform cityBlockView;
 
-    public UILabel playerLabel = null;
-    public UILabel cashLabel = null;
+    public Text playerLabel = null;
+    public Text cashLabel = null;
 
-    public UILabel cityBlockLabel = null;
-    public UILabel cityBlockIncomeLabel = null;
-    public UILabel cityBlockIncomeValueLabel = null;
+    public Text cityBlockLabel = null;
+    public Text cityBlockIncomeLabel = null;
+    public Text cityBlockIncomeValueLabel = null;
     public GameObject squadSelector;
 
     private City city;

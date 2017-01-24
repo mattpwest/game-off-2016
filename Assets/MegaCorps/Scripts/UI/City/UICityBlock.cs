@@ -55,7 +55,7 @@ public class UICityBlock : MonoBehaviour {
         }
 
         if (this.showMoveSelector && uiState.getActiveSquad() != null) {
-            Squad squad = uiState.getActiveSquad();
+            /*Squad squad = uiState.getActiveSquad();
             if (squad.command != null && squad.command.GetType() == typeof(MoveCommand)) {
                 MoveCommand cmd = (MoveCommand) squad.command;
                 if (cmd.x == cityBlock.x && cmd.y == cityBlock.y) {
@@ -68,6 +68,7 @@ public class UICityBlock : MonoBehaviour {
                 this.moveIndicator.GetComponent<TweenRotation>().enabled = false;
                 this.moveIndicator.localEulerAngles = new Vector3(0.0f, 0.0f, 0.0f);
             }
+            */
         }
     }
 
